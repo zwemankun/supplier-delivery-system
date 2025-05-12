@@ -1,0 +1,37 @@
+/* assets/styles/app.css */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+/* Custom styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    min-height: 100vh;
+    background-color: #e9ecef;
+}
+
+.login-container, .register-container {
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.dashboard-card {
+    height: 200px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e9ecef;
+}
+
+.logo-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
