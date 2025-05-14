@@ -89,13 +89,13 @@
                                 <td>{{ product.supplier ? product.supplier.name : 'N/A' }}</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-sm btn-info">
+                                        <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-sm btn-info" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-sm btn-warning" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}">
+                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>

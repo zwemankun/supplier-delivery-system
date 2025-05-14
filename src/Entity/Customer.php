@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerRepository;
+use Assert\NotBlank;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerRepository;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -12,6 +13,9 @@ class Customer
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+   
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $uniqueID = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
@@ -33,6 +37,18 @@ class Customer
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deleted_at = null;
+
+    public function getUniqueID(): ?string
+    {
+        return $this->uniqueID;
+    }
+
+    public function setUniqueID(string $uniqueID): static
+    {
+        $this->uniqueID = $uniqueID;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
