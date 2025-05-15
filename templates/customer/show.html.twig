@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer Details{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+    <div class="card shadow">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Customer Details</h4>
+            <div>
+                <a href="{{ path('app_customer') }}" class="btn btn-light me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+                <a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">ID:</div>
+                <div class="col-md-9">{{ customer.uniqueID }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Name:</div>
+                <div class="col-md-9">{{ customer.name }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Email:</div>
+                <div class="col-md-9">{{ customer.email }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Phone:</div>
+                <div class="col-md-9">{{ customer.phone }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Address:</div>
+                <div class="col-md-9">{{ customer.address }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Created At:</div>
+                <div class="col-md-9">{{ customer.createdAt ? customer.createdAt|date('Y-m-d H:i:s') : '' }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">Updated At:</div>
+                <div class="col-md-9">{{ customer.updatedAt ? customer.updatedAt|date('Y-m-d H:i:s') : '' }}</div>
+            </div>
+        </div>
+        <div class="card-footer">
+            {{ include('customer/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

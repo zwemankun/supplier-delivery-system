@@ -2,64 +2,93 @@
 
 {% block title %}New Supplier{% endblock %}
 
-{% block header %}Add New Supplier{% endblock %}
-
 {% block body %}
-    <div class="card">
-        <div class="card-body">
-            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {{ form_label(form.name) }}
-                            {{ form_widget(form.name) }}
-                            <div class="invalid-feedback">
-                                {{ form_errors(form.name) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {{ form_label(form.email) }}
-                            {{ form_widget(form.email) }}
-                            <div class="invalid-feedback">
-                                {{ form_errors(form.email) }}
-                            </div>
-                        </div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
                     </div>
                 </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {{ form_label(form.phone) }}
-                            {{ form_widget(form.phone) }}
-                            <div class="invalid-feedback">
-                                {{ form_errors(form.phone) }}
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 ml-sm-auto px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{% block header %}Add New Supplier{% endblock %}</h1>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(form.name) }}
+                                    {{ form_widget(form.name) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.name) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(form.email) }}
+                                    {{ form_widget(form.email) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.email) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            {{ form_label(form.address) }}
-                            {{ form_widget(form.address) }}
-                            <div class="invalid-feedback">
-                                {{ form_errors(form.address) }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(form.phone) }}
+                                    {{ form_widget(form.phone) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.phone) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ form_label(form.address) }}
+                                    {{ form_widget(form.address) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.address) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ path('app_supplier') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    {{ form_end(form) }}
                 </div>
-                
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ path('app_supplier') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            {{ form_end(form) }}
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}

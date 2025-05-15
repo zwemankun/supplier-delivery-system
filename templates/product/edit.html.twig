@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Edit Product</h1>
+            <a href="{{ path('app_product') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to List
+            </a>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-plus me-1"></i>
+                Product Information
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.name) }}
+                            {{ form_widget(form.name) }}
+                            {{ form_errors(form.name) }}
+                        </div>
+                        
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.price) }}
+                                    {{ form_widget(form.price) }}
+                                    {{ form_errors(form.price) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.quantity) }}
+                                    {{ form_widget(form.quantity) }}
+                                    {{ form_errors(form.quantity) }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.supplier) }}
+                            {{ form_widget(form.supplier) }}
+                            {{ form_errors(form.supplier) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-save me-1"></i> Edit Product
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
