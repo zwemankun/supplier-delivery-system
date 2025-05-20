@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Order - Order Management{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-plus-circle"></i> Create New Order
+                </h1>
+                <a href="{{ path('app_order') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Orders
+                </a>
+            </div>
+
+            <!-- Order Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-form"></i> Order Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'ajax-form', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form_label(form.customer) }}
+                            {{ form_widget(form.customer) }}
+                            {{ form_errors(form.customer) }}
+                            <div class="form-text">
+                                Select the customer for this order.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.total_amount) }}
+                            {{ form_widget(form.total_amount) }}
+                            {{ form_errors(form.total_amount) }}
+                            <div class="form-text">
+                                Total amount for this order in USD.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status) }}
+                            {{ form_errors(form.status) }}
+                            <div class="form-text">
+                                Select the current status of the order.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_order') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        {{ form_widget(form.save) }}
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Order Preview Card -->
+            <div class="card mt-4" id="orderPreview" style="display: none;">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-eye"></i> Order Preview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p><strong>Customer:</strong> <span id="previewCustomer">-</span></p>
+                            <p><strong>Total Amount:</strong> <span id="previewTotalAmount">-</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p><strong>Status:</strong> <span id="previewStatus">-</span></p>
+                            <p><strong>Creation Date:</strong> <span id="previewDate">{{ "now"|date('M d, Y H:i') }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).ready(function() {
+    // Form validation
+    const form = $('.ajax-form');
+    const customerSelect = $('#order_customer');
+    const totalAmountInput = $('#order_total_amount');
+    const statusSelect = $('#order_status');
+
+    // Real-time preview update
+    function updatePreview() {
+        const customerText = customerSelect.find('option:selected').text();
+        const totalAmount = totalAmountInput.val();
+        const status = statusSelect.val();
+
+        if (customerSelect.val() || totalAmount || status) {
+            $('#orderPreview').show();
+            $('#previewCustomer').text(customerSelect.val() ? customerText : '-');
+            $('#previewTotalAmount').text(totalAmount ? '$' + parseFloat(totalAmount).toFixed(2) : '-');
+            $('#previewStatus').text(status ? status.charAt(0).toUpperCase() + status.slice(1) : '-');
+        } else {
+            $('#orderPreview').hide();
+        }
+    }
+
+    // Update preview on input change
+    customerSelect.on('change', updatePreview);
+    totalAmountInput.on('input', updatePreview);
+    statusSelect.on('change', updatePreview);
+
+    // Custom validation
+    form.on('submit', function(e) {
+        let isValid = true;
+        
+        // Clear previous errors
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        // Validate customer
+        if (!customerSelect.val()) {
+            customerSelect.addClass('is-invalid');
+            customerSelect.after('<div class="invalid-feedback">Please select a customer.</div>');
+            isValid = false;
+        }
+
+        // Validate total amount
+        if (!totalAmountInput.val() || parseFloat(totalAmountInput.val()) <= 0) {
+            totalAmountInput.addClass('is-invalid');
+            totalAmountInput.after('<div class="invalid-feedback">Please enter a valid total amount.</div>');
+            isValid = false;
+        }
+
+        // Validate status
+        if (!statusSelect.val()) {
+            statusSelect.addClass('is-invalid');
+            statusSelect.after('<div class="invalid-feedback">Please select a status.</div>');
+            isValid = false;
+        }
+
+        if (!isValid && !$(this).hasClass('ajax-form')) {
+            e.preventDefault();
+        }
+    });
+
+    // Format currency input
+    totalAmountInput.on('blur', function() {
+        const value = parseFloat($(this).val());
+        if (!isNaN(value)) {
+            $(this).val(value.toFixed(2));
+            updatePreview();
+        }
+    });
+
+    // Auto-focus first field
+    customerSelect.focus();
+
+    // Keyboard shortcuts
+    $(document).on('keydown', function(e) {
+        // Ctrl+S or Cmd+S to save
+        if ((e.ctrlKey || e.metaKey) && e.which === 83) {
+            e.preventDefault();
+            form.submit();
+        }
+        // Escape to cancel
+        if (e.which === 27) {
+            window.location.href = '{{ path('app_order') }}';
+        }
+    });
+});
+</script>
+{% endblock %}
