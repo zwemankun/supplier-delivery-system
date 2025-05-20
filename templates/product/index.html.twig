@@ -1,20 +1,153 @@
+{# templates/product/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProductController!{% endblock %}
+{% block title %}Products Management{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Products</h1>
+            <a href="{{ path('app_product_new') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Add New Product
+            </a>
+        </div>
+        
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Products List
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Supplier</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>{{ product.id }}</td>
+                                <td class="text-center">
+                                  
+                                        <span class="badge bg-secondary">No Image</span>
+                                 
+                                </td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.description }}</td>
+                                <td>${{ product.price|number_format(2) }}</td>
+                                <td>
+                                    {% if product.quantity > 0 %}
+                                        <span class="badge bg-success">{{ product.quantity }} in stock</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Out of stock</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ product.supplier ? product.supplier.name : 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-sm btn-info" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-sm btn-warning" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ product.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel{{ product.id }}">Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete <strong>{{ product.name }}</strong>?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">No products found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/amigoes/Sym7/supply-chain-system/src/Controller/ProductController.php</code></li>
-        <li>Your template at <code>D:/amigoes/Sym7/supply-chain-system/templates/product/index.html.twig</code></li>
-    </ul>
-</div>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('#productsTable').DataTable({
+                responsive: true
+            });
+            
+            // Auto close alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
 {% endblock %}

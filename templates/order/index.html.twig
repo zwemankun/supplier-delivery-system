@@ -1,20 +1,338 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello OrderController!{% endblock %}
+{% block title %}Orders Management{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="h3 mb-0 text-gray-800">Orders Management</h1>
+            <p class="mb-0 text-muted">Manage and track all orders</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{{ path('app_order_new') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Order
+            </a>
+        </div>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <!-- Statistics Cards -->
+    <div class="row mb-4" id="statistics-cards">
+        {% for stat in statistics %}
+        {% set badge_class = stat.status == 'pending' ? 'warning' : (stat.status == 'processing' ? 'info' : (stat.status == 'shipped' ? 'primary' : (stat.status == 'delivered' ? 'success' : 'danger'))) %}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-{{ badge_class }} shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-{{ badge_class }} text-uppercase mb-1">
+                                {{ stat.status|title }} Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stat.count }}</div>
+                            <div class="text-xs text-muted">Total: ${{ stat.total|number_format(2) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/amigoes/Sym7/supply-chain-system/src/Controller/OrderController.php</code></li>
-        <li>Your template at <code>D:/amigoes/Sym7/supply-chain-system/templates/order/index.html.twig</code></li>
-    </ul>
+    <!-- Filters and Search -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Orders List</h6>
+            <div class="d-flex">
+                <!-- Search -->
+                <div class="input-group mr-3" style="width: 250px;">
+                    <input type="text" class="form-control form-control-sm" 
+                           placeholder="Search orders..." 
+                           id="search-input"
+                           value="{{ search_term }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" id="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Status Filter -->
+                <select class="form-control form-control-sm" id="status-filter" style="width: 150px;">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {{ current_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="processing" {{ current_status == 'processing' ? 'selected' : '' }}>Processing</option>
+                    <option value="shipped" {{ current_status == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                    <option value="delivered" {{ current_status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                    <option value="cancelled" {{ current_status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if orders is empty %}
+            <div class="text-center py-4">
+                <i class="fas fa-shopping-cart fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-500">No orders found</h5>
+                <p class="text-muted">Start by creating your first order.</p>
+                <a href="{{ path('app_order_new') }}" class="btn btn-primary">Create Order</a>
+            </div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="orders-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer ID</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr data-order-id="{{ order.id }}">
+                            <td>
+                                <a href="{{ path('app_order_show', {id: order.id}) }}" 
+                                   class="text-decoration-none fw-bold">
+                                    #{{ order.id }}
+                                </a>
+                            </td>
+                            <td>{{ order.customerId }}</td>
+                            <td>${{ order.totalAmount|number_format(2) }}</td>
+                            <td>
+                                <span class="badge {{ order.statusBadgeClass }} status-badge" 
+                                      data-order-id="{{ order.id }}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">
+                                    {{ order.createdAt|date('M d, Y H:i') }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('app_order_edit', {id: order.id}) }}" 
+                                       class="btn btn-sm btn-outline-primary" 
+                                       data-bs-toggle="tooltip" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><h6 class="dropdown-header">Update Status</h6></li>
+                                        <li><a class="dropdown-item status-update" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}" 
+                                               data-status="pending">Pending</a></li>
+                                        <li><a class="dropdown-item status-update" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}" 
+                                               data-status="processing">Processing</a></li>
+                                        <li><a class="dropdown-item status-update" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}" 
+                                               data-status="shipped">Shipped</a></li>
+                                        <li><a class="dropdown-item status-update" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}" 
+                                               data-status="delivered">Delivered</a></li>
+                                        <li><a class="dropdown-item status-update" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}" 
+                                               data-status="cancelled">Cancelled</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger delete-order" 
+                                               href="#" 
+                                               data-order-id="{{ order.id }}">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this order? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="delete-form" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Search functionality
+    $('#search-btn').click(function() {
+        performSearch();
+    });
+
+    $('#search-input').keypress(function(e) {
+        if (e.which == 13) {
+            performSearch();
+        }
+    });
+
+    // Status filter
+    $('#status-filter').change(function() {
+        var status = $(this).val();
+        var searchParams = new URLSearchParams(window.location.search);
+        
+        if (status) {
+            searchParams.set('status', status);
+        } else {
+            searchParams.delete('status');
+        }
+        
+        window.location.search = searchParams.toString();
+    });
+
+    // Status update functionality
+    $('.status-update').click(function(e) {
+        e.preventDefault();
+        var orderId = $(this).data('order-id');
+        var newStatus = $(this).data('status');
+        
+        updateOrderStatus(orderId, newStatus);
+    });
+
+    // Delete order functionality
+    $('.delete-order').click(function(e) {
+        e.preventDefault();
+        var orderId = $(this).data('order-id');
+        
+        $('#delete-form').attr('action', '{{ path('app_order_delete', {id: '__ORDER_ID__'}) }}'.replace('__ORDER_ID__', orderId));
+        $('#deleteModal').modal('show');
+    });
+
+    // Refresh statistics every 30 seconds
+    setInterval(refreshStatistics, 30000);
+
+    function performSearch() {
+        var searchTerm = $('#search-input').val();
+        var searchParams = new URLSearchParams(window.location.search);
+        
+        if (searchTerm) {
+            searchParams.set('search', searchTerm);
+        } else {
+            searchParams.delete('search');
+        }
+        
+        window.location.search = searchParams.toString();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+        $.ajax({
+            url: '{{ path('order_update_status', {id: '__ORDER_ID__'}) }}'.replace('__ORDER_ID__', orderId),
+            type: 'POST',
+            data: {
+                status: newStatus
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Update badge
+                    var badge = $('[data-order-id="' + orderId + '"].status-badge');
+                    badge.removeClass().addClass('badge ' + response.badge_class + ' status-badge');
+                    badge.text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
+                    
+                    // Show success message
+                    showAlert('Order status updated successfully!', 'success');
+                    
+                    // Refresh statistics
+                    refreshStatistics();
+                }
+            },
+            error: function() {
+                showAlert('Error updating order status. Please try again.', 'danger');
+            }
+        });
+    }
+
+    function refreshStatistics() {
+        $.ajax({
+            url: '{{ path('order_api_statistics') }}',
+            type: 'GET',
+            success: function(data) {
+                // Update statistics cards if needed
+                console.log('Statistics refreshed:', data);
+            }
+        });
+    }
+
+    function showAlert(message, type) {
+        var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                        message +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                        '</div>';
+        
+        // Insert alert at the top of the container
+        $('.container-fluid').prepend(alertHtml);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut();
+        }, 5000);
+    }
+});
+</script>
 {% endblock %}
