@@ -14,6 +14,9 @@ class Order
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column]
+    private ?int $customer_id = null;
+
     #[ORM\Column(nullable: true)]
     private ?int $total_amount = null;
 
@@ -32,6 +35,18 @@ class Order
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function getCustomerId(): ?int
+    {
+        return $this->customer_id;
+    }
+
+    public function setCustomerId(int $customer_id): static
+    {
+        $this->customer_id = $customer_id;
+
+        return $this;
     }
 
     public function getTotalAmount(): ?int
@@ -57,7 +72,31 @@ class Order
 
         return $this;
     }
+   
+      public function getStatusLabel(): string
+    {
+        return match($this->status) {
+            'pending' => 'Pending',
+            'processing' => 'Processing',
+            'shipped' => 'Shipped',
+            'delivered' => 'Delivered',
+            'cancelled' => 'Cancelled',
+            default => 'Unknown'
+        };
+    }
 
+    public function getStatusBadgeClass(): string
+    {
+        return match($this->status) {
+            'pending' => 'bg-warning',
+            'processing' => 'bg-info',
+            'shipped' => 'bg-primary',
+            'delivered' => 'bg-success',
+            'cancelled' => 'bg-danger',
+            default => 'bg-secondary'
+        };
+    }
+    
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;

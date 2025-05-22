@@ -1,20 +1,117 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DeliveryController!{% endblock %}
+{% block title %}Delivery Management{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-3 text-center">
+                    <div class="logo-container mb-3">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                         <span>Logo</span>
+                         </a>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ path('app_supplier') }}" class="list-group-item list-group-item-action bg-light">Suppliers</a>
+                    <a href="{{ path('app_product') }}" class="list-group-item list-group-item-action bg-light">Products</a>
+                    <a href="{{ path('app_order') }}" class="list-group-item list-group-item-action bg-light">Orders</a>
+                    <a href="{{ path('app_delivery') }}" class="list-group-item list-group-item-action bg-light">Deliveries</a>
+                    <a href="{{ path('app_customer') }}" class="list-group-item list-group-item-action bg-light">Customers</a>
+                </div>
+            </div>
+        </div>
+         <!-- Main Content -->
+                <div class="col-md-10 content-area">
+           <div class="header d-flex justify-content-end py-3 px-2">
+                <a href="{{ path('app_logout') }}" class="btn btn-light">Logout</a>
+            </div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Delivery Management</h1>
+        <a href="{{ path('app_delivery_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Delivery
+        </a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/amigoes/Sym7/supply-chain-system/src/Controller/DeliveryController.php</code></li>
-        <li>Your template at <code>D:/amigoes/Sym7/supply-chain-system/templates/delivery/index.html.twig</code></li>
-    </ul>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">All Active Deliveries</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="deliveryTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Order ID</th>
+                            <th>Status</th>
+                            <th>Tracking Number</th>
+                            <th>Delivery Date</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for delivery in deliveries %}
+                        <tr>
+                            <td>{{ delivery.id }}</td>
+                            <td>{{ delivery.order.id }}</td>
+                            <td>
+                                <span class="badge rounded-pill bg-{{ 
+                                    delivery.status == 'delivered' ? 'success' : 
+                                    delivery.status == 'failed' or delivery.status == 'returned' ? 'danger' : 
+                                    delivery.status == 'in_transit' or delivery.status == 'out_for_delivery' ? 'info' : 'warning' 
+                                }}">
+                                    {{ delivery.status|capitalize|replace({'_': ' '}) }}
+                                </span>
+                            </td>
+                            <td>{{ delivery.trackingNumber ?? 'N/A' }}</td>
+                            <td>{{ delivery.deliveryDate ? delivery.deliveryDate|date('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ delivery.createdAt ? delivery.createdAt|date('Y-m-d H:i') : '' }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('app_delivery_show', {'id': delivery.id}) }}" class="btn btn-sm btn-info" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_delivery_edit', {'id': delivery.id}) }}" class="btn btn-sm btn-warning" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" action="{{ path('app_delivery_delete', {'id': delivery.id}) }}" 
+                                          onsubmit="return confirm('Are you sure you want to delete this delivery?');" 
+                                          style="display: inline-block;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ delivery.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" style="width: 32px; height: 31px; padding: 0.25rem 0.5rem;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">No deliveries found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    $(document).ready(function() {
+        $('#deliveryTable').DataTable({
+            responsive: true,
+            order: [[0, 'desc']]
+        });
+    });
+</script>
 {% endblock %}

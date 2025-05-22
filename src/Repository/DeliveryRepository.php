@@ -16,28 +16,35 @@ class DeliveryRepository extends ServiceEntityRepository
         parent::__construct($registry, Delivery::class);
     }
 
-    //    /**
-    //     * @return Delivery[] Returns an array of Delivery objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('d.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return Delivery[] Returns an array of active deliveries
+     */
+    public function findAllActive(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.deleted_at IS NULL')
+            ->orderBy('d.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Delivery
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByTrackingNumber(string $tracking): ?Delivery
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.tracking_number = :tracking')
+            ->andWhere('d.deleted_at IS NULL')
+            ->setParameter('tracking', $tracking)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+    
+    public function findByOrderId(string $orderId): ?Delivery
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.order_id = :orderId')
+            ->andWhere('d.deleted_at IS NULL')
+            ->setParameter('orderId', $orderId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

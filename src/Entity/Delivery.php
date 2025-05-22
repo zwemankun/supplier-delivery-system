@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\DeliveryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
+  
 
 #[ORM\Entity(repositoryClass: DeliveryRepository::class)]
 class Delivery
@@ -12,6 +14,14 @@ class Delivery
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?Uuid $uniqueId = null;
+
+    #[ORM\ManyToOne(targetEntity: Order::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Order $order = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
@@ -31,9 +41,38 @@ class Delivery
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deleted_at = null;
 
+  
+     public function __construct()
+    {
+        $this->uniqueId = Uuid::v4(); // generates a random UUID (version 4)
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+     public function getUniqueId(): ?Uuid
+    {
+        return $this->uniqueId;
+    }
+
+    public function setUniqueId(Uuid $uniqueId): static
+    {
+        $this->uniqueId = $uniqueId;
+
+        return $this;
+    }
+
+     public function getOrder(): ?Order
+    {
+        return $this->order;
+    }
+
+    public function setOrder(?Order $order): self
+    {
+        $this->order = $order;
+        return $this;
     }
 
     public function getStatus(): ?string
@@ -107,4 +146,5 @@ class Delivery
 
         return $this;
     }
+     
 }
