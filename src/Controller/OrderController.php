@@ -14,14 +14,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-
+#[Route('/order')]
 final class OrderController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private OrderRepository $orderRepository
     ) {}
-    #[Route('/order', name: 'app_order')]
+    #[Route('/', name: 'app_order')]
     public function index(Request $request): Response
     {
         $status = $request->query->get('status');
@@ -50,7 +50,7 @@ final class OrderController extends AbstractController
             'search_term' => $search,
         ]);
     }
-     #[Route('/order/show/{id}', name: 'app_order_show', methods: ['GET'])]
+     #[Route('/show/{id}', name: 'app_order_show', methods: ['GET'])]
     public function show(Order $order): Response
     {
         if ($order->getDeletedAt()) {
@@ -62,7 +62,7 @@ final class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/order/new', name: 'app_order_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
       public function new(Request $request): Response
     {
         $order = new Order();
@@ -93,7 +93,7 @@ final class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/order/edit/{id}', name: 'app_order_edit', methods: ['GET', 'POST'])]
+    #[Route('/edit/{id}', name: 'app_order_edit', methods: ['GET', 'POST'])]
      public function edit(Request $request, Order $order): Response
     {
         // Find the customer entity using the customer_id from the order
@@ -131,7 +131,7 @@ final class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/order/delete/{id}', name: 'app_order_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'app_order_delete', methods: ['POST'])]
     public function delete(Order $order): Response
     {
         $this->orderRepository->hardDelete($order);

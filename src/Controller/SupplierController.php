@@ -11,16 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+#[Route('/supplier')]
 class SupplierController extends AbstractController
 {
-    
-
     public function __construct(
         private EntityManagerInterface $em,
         private SupplierRepository   $repo
     ) {}
-    #[Route('/supplier', name: 'app_supplier', methods: ['GET'])]
+    #[Route('/', name: 'app_supplier', methods: ['GET'])]
     public function index(Request $request): Response
     {
         // Grab raw “fromDate” / “toDate” GET params (empty string if missing)
@@ -45,7 +43,7 @@ class SupplierController extends AbstractController
             'toDate'    => $toDate,
         ]);
     }
-    #[Route('/supplier/new', name: 'app_supplier_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_supplier_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $supplier = new Supplier();
@@ -66,7 +64,7 @@ class SupplierController extends AbstractController
         ]);
     }
      
-    #[Route('/supplier/{id}/edit', name: 'app_supplier_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_supplier_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Supplier $supplier): Response
     {
         // Make sure we're using the correct form class name
@@ -85,7 +83,7 @@ class SupplierController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route('/supplier/{id}', name: 'app_supplier_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_supplier_delete', methods: ['POST'])]
     public function delete(Request $request, Supplier $supplier): Response
     {
          
@@ -93,9 +91,6 @@ class SupplierController extends AbstractController
             $this->em->flush();
             return $this->redirectToRoute('app_supplier');
     }
-
-   
-
     
 }
 
